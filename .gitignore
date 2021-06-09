@@ -1,0 +1,10 @@
+dynamic_p1/plots/ground/ground_x_3.plt
+dynamic_p1/plots/ground/ground_density_y.plt
+# plots
+/plots
+/plots/*.plt
+*/plots
+*.xml
+__pycache__/orb_func.cpython-37.pyc
+.idea/orbital_analysis.iml
+.idea/.gitignore
