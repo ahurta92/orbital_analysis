@@ -84,7 +84,7 @@ def make_plots(df, plot_func, low_range, high_range, plot_path):
     return plot_df
 
 
-def compute_energies(df, lo_val, hi_val, center_p, plot_path):
+def compute_energies(df, lo_val, hi_val, center_p, plot_path, o_e):
     # these are the orbitals
     columns = list(df)
     # these are the states
