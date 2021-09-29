@@ -7,15 +7,12 @@ from qcelemental.molparse import regex
 
 from qcengine.programs.util.pdict import PreservingDict
 
-test = "static"
-response_file = test + "/response.out"
-txt = open(response_file, "r")
-
-data = txt.read()
 
 
 def harvest_outfile_pass(outtext):
+    txt = open(outtext, "r")
 
+    data = txt.read()
     psivar = PreservingDict()
 
     NUMBER = r"(?x:" + regex.NUMBER + ")"  # NUMBER
@@ -32,7 +29,7 @@ def harvest_outfile_pass(outtext):
 
     for var, VAR in optDict.items():
         mobj = re.search(r"^\s*" + var + r"\s*" + NUMBER + r"\s*$", data, re.MULTILINE)
-        print(mobj)
+        #print(mobj)
         if mobj:
             psivar[VAR] = mobj.group(1)
     # Grab the Orbital Energies  There are NUM ORBITALS
@@ -68,7 +65,7 @@ def harvest_outfile_pass(outtext):
         first_line = r"^\s*" + var + r"\s+"
         NUMBER = r"(?x:" + regex.NUMBER + ")"  # NUMBER
         NUMSPACE = NUMBER + r"\s*"  # NUMBER + SPACE
-        print(first_line)
+        #print(first_line)
 
         CAPTURE_LINE = str()
         for j in range(col):
@@ -78,14 +75,14 @@ def harvest_outfile_pass(outtext):
             front = r"^\[" + str(i) + r",\*\]\s*"
             line = front + CAPTURE_LINE
             total += line
-            print(line)
+        #    print(line)
 
         mobj = re.search(
             total,
             data,
             re.MULTILINE,
         )
-        print(mobj)
+        #print(mobj)
         if mobj:
             oe_list = []
             for i in range(row):

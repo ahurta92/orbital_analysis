@@ -16,9 +16,24 @@ def read_ground_orb_plots(num_orbitals, test, di):
         p_1 = "ground_" + di + "_" + str(i)
         o_dict[p_1] = []
         for j in range(num_orbitals):
-            p_2 = "ground_" + di + "_" + str(j)
+s           p_2 = "ground_" + di + "_" + str(j)
             p_3 = plot_path + p_2 + ".plt"
             o_dict[p_1].append(np.genfromtxt(p_3, dtype=float))
+    return pd.DataFrame.from_dict(o_dict, orient="index", columns=cols)
+
+
+def read_ground_density_plots(test_dir):
+    # test directory + /plots +/ground
+    plot_path = test_dir + "/plots/ground/"
+    o_dict = {}
+
+    cols = []
+    directions = "xyz"
+    for d in directions:
+        p_1 = "ground_density_" + d
+        o_dict[p_1] = []
+        p_3 = plot_path + p_1 + ".plt"
+        o_dict[p_1].append(np.genfromtxt(p_3, dtype=float))
     return pd.DataFrame.from_dict(o_dict, orient="index", columns=cols)
 
 
@@ -53,9 +68,8 @@ def read_orb_plots(xy, test, di, num_states, num_orbitals):
         p_1 = xy + "_state_" + str(i)
         o_dict[p_1] = []
         for j in range(num_orbitals):
-            p_2 = (
-                mol_path + xy + "_direction_" + di + "_res_" + str(i) + "_orb_" + str(j)
-            )
+            p_2 = (mol_path + xy + "_direction_" + di + "_res_" + str(i) +
+                   "_orb_" + str(j))
             o_dict[p_1].append(np.genfromtxt(p_2, dtype=float))
     return pd.DataFrame.from_dict(o_dict, orient="index", columns=cols)
 
@@ -84,7 +98,9 @@ def make_plots(df, plot_func, low_range, high_range, plot_path):
     return plot_df
 
 
-def compute_energies(df, lo_val, hi_val, center_p, plot_path, o_e):
+# TODO figure out fit to exp(-alpha r) alpha=sqrt(-2*e_i)
+# exp(-alpha*r)/r^2
+def compute_energies(df, lo_val, hi_val, center_p, plot_path, o_e) -> object:
     # these are the orbitals
     columns = list(df)
     # these are the states
@@ -126,10 +142,11 @@ def compute_energies(df, lo_val, hi_val, center_p, plot_path, o_e):
                 # get regression score and energy
                 score = reg.score(r_far, log_phi_i)
                 momentum = reg.coef_[0]
-                Energy = -(momentum[0] ** 2) / 2
+                Energy = -(momentum[0]**2) / 2
 
                 print(
-                    "Regression Score | orbital energy " + title + "_" + str(col),
+                    "Regression Score | orbital energy " + title + "_" +
+                    str(col),
                     " | ",
                     str(round(score, 2)),
                     " ",
@@ -138,7 +155,10 @@ def compute_energies(df, lo_val, hi_val, center_p, plot_path, o_e):
                 # get predicted values
                 log_phi_predict = reg.predict(r_far)
                 # plot log_phi
-                plt.plot(r[r_index], log_phi[r_index], "ro", markersize=mark_size)
+                plt.plot(r[r_index],
+                         log_phi[r_index],
+                         "ro",
+                         markersize=mark_size)
                 plt.plot(r_far, log_phi_predict, "bo", markersize=mark_size)
 
                 plt.ylabel(y_label)

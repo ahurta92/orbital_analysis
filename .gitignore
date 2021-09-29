@@ -1,3 +1,11 @@
+*.out
+*.vts
+*.plt
+*plots/*
+molecule/*
+*molecule/*
+*molecule*
+*molecule*
 dynamic_p1/plots/ground/ground_x_3.plt
 dynamic_p1/plots/ground/ground_density_y.plt
 # plots
