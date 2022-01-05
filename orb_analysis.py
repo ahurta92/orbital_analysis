@@ -14,7 +14,7 @@ import math
 import matplotlib.pyplot as plt
 import glob
 import pandas as pd
-#molecule = "molecules/10_Be"
+# molecule = "molecules/10_Be"
 molecule = "molecules/11_Ne"
 print(molecule)
 # test = "dynamic_p1"
@@ -36,24 +36,17 @@ num_orders = 2
 
 # ground plots
 # [num_states, num_orbs] = get_num_states(response_dir)
-xoffset=24.0
-rho = read_density_plots(response_dir, num_orders, num_states,xoffset)
-phi = read_orbital_plots(response_dir, num_orders, num_states, num_orbitals,xoffset)
+xoffset = 24.0
+rho = read_density_plots(response_dir, num_orders, num_states, xoffset)
+phi = read_orbital_plots(response_dir, num_orders, num_states, num_orbitals, xoffset)
 plot_path = response_dir + "/plots"
 
-lo_val =1e-6
+lo_val = 1e-6
 hi_val = 8e-6
 p_lo = -24
 p_hi = 0
-center_p=0
+center_p = 0
 
-#e_rho_x = compute_energies_density(rho, num_orders, num_states, lo_val, hi_val,
 #                                   0, plot_path)
-e_orbs = compute_orbital_energies(phi, num_orders, num_states,num_orbitals ,lo_val, hi_val,
-                                   center_p, plot_path)
-# e_xx_df = compute_orbital_energies(x_x, lo, hi, plot_path)
-# e_yx_df = compute_orbital_energies(y_x, lo, hi, plot_path)
-# e_gx_df = compute_energies(g_x, lo_val, hi_val, p_hi, plot_path, o_e)
-# e_xx_df = compute_energies(x_x, lo_val, hi_val, p_hi, plot_path, o_e)
-# e_xy_df = compute_energies(x_y, lo_val, hi_val, p_hi, plot_path, o_e)
-# e_xz_df = compute_energies(x_z, lo_val, hi_val, p_hi, plot_path, o_e)
+e_orbs = compute_orbital_energies(phi, num_orders, num_states, num_orbitals, lo_val, hi_val,
+                                  center_p, plot_path)

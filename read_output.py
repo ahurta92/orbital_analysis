@@ -8,7 +8,6 @@ from qcelemental.molparse import regex
 from qcengine.programs.util.pdict import PreservingDict
 
 
-
 def harvest_outfile_pass(outtext):
     txt = open(outtext, "r")
 
@@ -29,7 +28,7 @@ def harvest_outfile_pass(outtext):
 
     for var, VAR in optDict.items():
         mobj = re.search(r"^\s*" + var + r"\s*" + NUMBER + r"\s*$", data, re.MULTILINE)
-        #print(mobj)
+        # print(mobj)
         if mobj:
             psivar[VAR] = mobj.group(1)
     # Grab the Orbital Energies  There are NUM ORBITALS
@@ -65,7 +64,7 @@ def harvest_outfile_pass(outtext):
         first_line = r"^\s*" + var + r"\s+"
         NUMBER = r"(?x:" + regex.NUMBER + ")"  # NUMBER
         NUMSPACE = NUMBER + r"\s*"  # NUMBER + SPACE
-        #print(first_line)
+        # print(first_line)
 
         CAPTURE_LINE = str()
         for j in range(col):
@@ -82,7 +81,7 @@ def harvest_outfile_pass(outtext):
             data,
             re.MULTILINE,
         )
-        #print(mobj)
+        # print(mobj)
         if mobj:
             oe_list = []
             for i in range(row):
@@ -95,7 +94,6 @@ def harvest_outfile_pass(outtext):
     psivar = grab_tensor(r"Ground state overlap:", "OVERLAP", 5, 5, psivar)
     psivar = grab_tensor(r"Ground state hamiltonian:", "HAMILTONIAN", 5, 5, psivar)
     return psivar
-
 
 # Orbital Energies: [*] -32.77244263  -1.93039104  -0.85040982  -0.85040981  -0.85040978
 
