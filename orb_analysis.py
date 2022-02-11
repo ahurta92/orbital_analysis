@@ -1,44 +1,31 @@
 #!/usr/bin/env python
 # coding: utf-8
-# from orb_func import read_orb_plots
-from orb_func import read_density_plots
-from orb_func import plot_single_orbital
-from orb_func import read_orbital_plots
-from orb_func import compute_energies_density
+import json
 from orb_func import compute_orbital_energies
-from read_output import harvest_outfile_pass
-import glob
-import numpy as np
-import scipy.optimize as opt
-import math
-import matplotlib.pyplot as plt
-import glob
-import pandas as pd
-# molecule = "molecules/10_Be"
-molecule = "molecules/11_Ne"
-print(molecule)
-# test = "dynamic_p1"
-# test = "dynamic_p2"o
-# o_0000=0.000
-# o_0025=0.025
-frequency = "o_0000"
-response_dir = molecule + "/" + frequency
-tests = glob.glob(molecule + "/o_*")
+from orb_func import read_density_plots
+from orb_func import read_orbital_plots
+from read_madness_json import read_molrespone_json
 
-response_file = response_dir + "/response.out"
-print(response_file)
+root_dir = "/home/adrianhurtado/projects/madness-test-suite/tests_response/orbital_analysis"
+molecule = "/10_Be"
 
-psivar = harvest_outfile_pass(response_file)
-o_e = psivar["ORBITAL ENERGIES"]
-num_states = int(psivar["NUM STATES"])
-num_orbitals = int(psivar["NUM ORBITALS"])
+working_dir = root_dir + molecule
+
+response_dir = working_dir + "/excited_state"
+response_json = response_dir + "/response.json"
+
+with open(response_json, "r") as json_file:
+    response_j = json.load(json_file)
+    r_params, proto_data = read_molrespone_json(response_j)
+
+num_states = r_params["states"]
+num_orbitals = r_params["num_orbitals"]
 num_orders = 2
 
-# ground plots
 # [num_states, num_orbs] = get_num_states(response_dir)
-xoffset = 24.0
-rho = read_density_plots(response_dir, num_orders, num_states, xoffset)
-phi = read_orbital_plots(response_dir, num_orders, num_states, num_orbitals, xoffset)
+x_offset = 24.0
+rho = read_density_plots(response_dir, num_orders, num_states, x_offset)
+phi = read_orbital_plots(response_dir, num_orders, num_states, num_orbitals, x_offset)
 plot_path = response_dir + "/plots"
 
 lo_val = 1e-6

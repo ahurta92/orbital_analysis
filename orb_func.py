@@ -247,8 +247,6 @@ def compute_orbital_energies(df, num_orders, num_states, num_orbitals, lo_val,
                     hi_idx = np.argwhere(absphi > lo_val)[-1][0]
                     lo_idx = np.argwhere(absphi > hi_val)[-1][0]
                     r_far = r[lo_idx:hi_idx]
-                    print("r_lo ", r_far[0], "r_hi", r_far[-1], "rfar.size() ",
-                          r_far.size)
                     # r_far = r_far.reshape(-1, 1)
                     phi_far = phi[lo_idx:hi_idx]
                     log_phi_far =np.log(np.abs(phi_far))

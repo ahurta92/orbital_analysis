@@ -1,27 +1,6 @@
 import qcengine as qcng
 import qcelemental as qcel
 
-import json
-
-j = json.dumps(
-    {
-        "molecule": {
-            "geometry": [
-                0.0,
-                0.0000,
-                -0.1294,
-                0.0,
-                -1.4941,
-                1.0274,
-                0.0,
-                1.4941,
-                1.0274,
-            ],
-            "symbols": ["O", "H", "H"],
-        }
-    }
-)
-
 mol = qcel.models.Molecule.from_data(
     """
      O  0.0  0.000  -0.129
@@ -29,10 +8,9 @@ mol = qcel.models.Molecule.from_data(
      H  0.0  1.494  1.027
  """
 )
-mol.pretty_print()
 program = "madness"
 basis = None
-keywords = {"dft__k": 7, "dft__aobasis": "sto-3g", "dft__econv": 1.0000e-05}
+keywords = {"dft__k": 7, "dft__aobasis": "sto-3g", "dft__econv": 1.0000e-05 }
 
 inp = qcel.models.AtomicInput(
     molecule=mol,
@@ -43,3 +21,19 @@ inp = qcel.models.AtomicInput(
 qcng.get_program("madness")
 
 ret = qcng.compute(inp, "madness")
+
+    "program,basis,keywords",
+            None,
+keywords= {
+                "dft__k": 7,
+                "dft__aobasis": "sto-3g",
+                "dft__econv": 1.0000e-05,
+                "dft__kain": True,
+                "response__first_order": True,
+                "response__kain": True,
+                "response__dipole": True,
+                "response__maxsub": 10,
+                "response__maxiter": 10,
+                "response__omega": 0.0,
+            }
+
