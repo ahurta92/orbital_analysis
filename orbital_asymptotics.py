@@ -11,15 +11,15 @@ import scipy.optimize as opt
 # 0  0  1  0  1  0  2  1
 #
 # Only capable of working with Ar
-l_angular = [0, 0, 1, 0, 1, ]
-r_orbs = ['1s', '2s', '2p', '3s', '3p', '4s', '3d', '4p']
-orb_labels = {1: '1s', 2: '2s', 5: '2p', 6: '3s', 9: '3p'}
+l_angular = [0, 0, 1, 0, 1, 0, 2, 1, 0]
+r_orbs = ['1s', '2s', '2p', '3s', '3p', '4s', '3d', '4p', '5s']
+orb_labels = {1: '1s', 2: '2s', 5: '2p', 6: '3s', 9: '3p', 10: '4s'}
 shell_sizes = {'1s': 1, '2s': 2, '2p': 3, '3s': 4, '3p': 5, '4s': 6}
 
 num_orb_i = [1, 1, 3, 1, 3, 1, 5]
 
 
-# take df and average out the
+# take set of orbitals...1s 2s,2p,3s 3p, and return the radially averaged components
 def orbital_scrubbing(psi_df: pd.DataFrame, c_labels: list[str], num_orbitals: int):
     size = shell_sizes[orb_labels[num_orbitals]]
     x_dict = {}
@@ -82,15 +82,13 @@ def energies_scrubbing(size, energies):
 
 # assumes that p orbitals have been averaged
 # only working with closed shell atoms for this reason.
-def compute_alpha_nl(num_orbitals, energies):
+def compute_alpha_nl(num_orbitals, energies, shift=0):
     # First step is to compute alpha_h
     beta_h = np.sqrt(-2 * energies[num_orbitals - 1])
     alpha_h = 1 / beta_h - 1
     # now we need to compute alpha_nl based on the value of l
-    l_homo = l_angular[num_orbitals - 1]
-    homo_label = r_orbs[num_orbitals - 1]
-    homo_type = homo_label[1]
-    homo_level = homo_label[0]  # get the level of the valence
+    l_homo = l_angular[num_orbitals - 1 + shift]
+    homo_label = r_orbs[num_orbitals - 1 + shift]
     alpha_nl = []
     beta_nl = []
     # if atom only consists of s orbitals then alpha_nl = 1/beta_nl
@@ -103,7 +101,7 @@ def compute_alpha_nl(num_orbitals, energies):
             beta_nl.append(beta_nli)
     else:
         for oj in range(num_orbitals - 1):
-            l_orbital = l_angular[oj]
+            l_orbital = l_angular[oj + shift]
             if l_orbital != l_homo:
                 alpha_nl.append(alpha_h - np.abs(l_orbital - l_homo) - 1)
             # if the l_homo is 0
@@ -168,7 +166,7 @@ def compute_asymptotic(r, alpha_nl, beta_nl, b_nl, size):
     return x
 
 
-def plot_ground_asymptotics(r, phi, size, alpha_nl, beta_nl, b_nl, plot_lo, plot_hi, mol_name):
+def plot_ground_asymptotics(r, phi, size, b_nl, alpha_nl, beta_nl, plot_lo, plot_hi, mol_name):
     p_index = np.argwhere((r > plot_lo) & (r < plot_hi))
     r_plot = r[p_index].flatten()
     phi_plot = phi[p_index][:]
@@ -185,7 +183,6 @@ def plot_ground_asymptotics(r, phi, size, alpha_nl, beta_nl, b_nl, plot_lo, plot
         y = np.empty((logphi.shape[0], 2))
         y[:, 0] = logphi[:, k]
         y[:, 1] = logxasmp[:, k]
-        print(y.shape)
         plt.plot(r_plot, y[:, 0],
                  label=orb_names[k], color=colors[k], marker=shell_markers[k], markevery=20, linestyle='None')
         plt.plot(r_plot, y[:, 1],
@@ -195,5 +192,69 @@ def plot_ground_asymptotics(r, phi, size, alpha_nl, beta_nl, b_nl, plot_lo, plot
     plt.xlabel("r(a.u)")
     plt.ylabel("$\ln|\chi_{nl}|$")
     plt.legend()
+    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+
+    # place a text box in upper left in axes coords
+    plt.text(0.05, 0.95, mol_name,  fontsize=14,
+            verticalalignment='top', bbox=props)
     plt.savefig(mol_name + ".svg")
     plt.show()
+
+
+def plot_response_asymptotics(r, phi, size, b_nl, alpha_nl, beta_nl, plot_lo, plot_hi, mol_name):
+    p_index = np.argwhere((r > plot_lo) & (r < plot_hi))
+    r_plot = r[p_index].flatten()
+    phi_plot = phi[p_index][:]
+    sshape = (phi_plot.shape[0], phi_plot.shape[2])
+    phi_plot = phi_plot.reshape(sshape)
+    shell_markers = [".", "o", 'v', '*', '^', '1', '2', '3', '4'][0:size + 1]
+    colors = "rbygcmw"[0:size + 1]
+    x_asymp = compute_asymptotic(r_plot, alpha_nl, beta_nl, b_nl, size)
+    logphi = np.log(np.abs(phi_plot))
+    logxasmp = np.log(np.abs(x_asymp))
+
+    orb_names = list(shell_sizes.keys())[0:size + 1]
+    for k in range(size):
+        y = np.empty((logphi.shape[0], 2))
+        y[:, 0] = logphi[:, k]
+        y[:, 1] = logxasmp[:, k]
+        plt.plot(r_plot, y[:, 0],
+                 label=orb_names[k + 1], color=colors[k + 1], marker=shell_markers[k + 1], markevery=20,
+                 linestyle='None')
+        plt.plot(r_plot, y[:, 1],
+                 label=orb_names[k + 1], color=colors[k + 1], linestyle="--")
+
+    plt.title("Asymptotic Region of Response Orbitals ")
+    plt.xlabel("r(a.u)")
+    plt.ylabel("$\ln|\chi_{nl}|$")
+    plt.legend()
+    props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
+
+    # place a text box in upper left in axes coords
+    plt.text(0.05, 0.95, mol_name,  fontsize=14,
+             verticalalignment='top', bbox=props)
+    plt.savefig(mol_name + ".svg")
+
+    plt.show()
+
+
+def compute_fits(r, chi, alpha_nl, beta_nl, size, r_p, l_p):
+    homo_label = r_orbs[size - 1]  # get the label of the homo
+    homo_type = homo_label[1]
+
+    def logchi(r, c, alpha):
+        return np.log(c*c) + 2*alpha * np.log(r) - 2*beta_nl[0] * r
+    fits = []
+    for k in range(size):
+        orb_label = r_orbs[k]
+        orb_type = orb_label[0]
+
+        r_lo = r_p[k]
+        r_hi = r_p[k] + l_p[k]
+        r_index = np.argwhere((r > r_lo) & (r < r_hi))
+        r_long = r[r_index].flatten()
+        log_chi_far = np.log(chi[r_index, k]**2).flatten()
+        popt, pcov = opt.curve_fit(logchi, r_long, log_chi_far, [1.0, -1.0])
+        print(popt)
+        fits.append(popt)
+    return np.array(fits)
