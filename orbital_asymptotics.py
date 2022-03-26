@@ -184,7 +184,7 @@ def plot_ground_asymptotics(r, phi, size, b_nl, alpha_nl, beta_nl, plot_lo, plot
         y[:, 0] = logphi[:, k]
         y[:, 1] = logxasmp[:, k]
         plt.plot(r_plot, y[:, 0],
-                 label=orb_names[k], color=colors[k], marker=shell_markers[k], markevery=20, linestyle='None')
+                 label=orb_names[k], color=colors[k], marker=None, markevery=10, linestyle='-')
         plt.plot(r_plot, y[:, 1],
                  label=orb_names[k], color=colors[k], linestyle="--")
 
@@ -219,8 +219,8 @@ def plot_response_asymptotics(r, phi, size, b_nl, alpha_nl, beta_nl, plot_lo, pl
         y[:, 0] = logphi[:, k]
         y[:, 1] = logxasmp[:, k]
         plt.plot(r_plot, y[:, 0],
-                 label=orb_names[k + 1], color=colors[k + 1], marker=shell_markers[k + 1], markevery=20,
-                 linestyle='None')
+                 label=orb_names[k + 1], color=colors[k + 1], marker=None, markevery=20,
+                 linestyle='-')
         plt.plot(r_plot, y[:, 1],
                  label=orb_names[k + 1], color=colors[k + 1], linestyle="--")
 
